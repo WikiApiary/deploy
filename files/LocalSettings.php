@@ -4,7 +4,12 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
-$getenv = function( $var ) { return $_ENV[$var] ?? die( "$var envvar needed!" ); };
+// This section applies the variables set in /etc/apache2/envvars
+// It depends on the changes to php.ini configuration and the SetEnv
+// lines in the htaccess file.
+$getenv = function ( $var ) {
+    return $_ENV[$var] ?? die( "$var envvar needed!" );
+};
 $SECRET_DBPASSWORD = $getenv("WA_DBPASSWORD");
 $SECRET_SECRETKEY = $getenv("WA_SECRETKEY");
 $SECRET_UPGRADEKEY = $getenv("WA_UPGRADEKEY");

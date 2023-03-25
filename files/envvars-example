@@ -1,5 +1,11 @@
+A section like the following one needs to be added to /etc/apache2/envvars
+
+Since this contains secrets, it this is not stored in the git repository.
+
+~~~~~~~~~~ SNIP ~~~~~~~~~~
 # Environment variables for WikiApiary
 export WA_DBPASSWORD=xxx
 export WA_SECRETKEY=xxx
 export WA_UPGRADEKEY=xxx
 export WA_EXTDATADBPASSWORD=xxx
+~~~~~~~~~~ SNIP ~~~~~~~~~~

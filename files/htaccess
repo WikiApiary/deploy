@@ -1,3 +1,6 @@
+# This is needed so that apache passes these environment variables to php.  (See 99-envvars.ini and
+# envvars-example and the top few lines of LocalSettings.php for other necessary modifications.)
+#
 PassEnv WA_DBPASSWORD
 PassEnv WA_SECRETKEY
 PassEnv WA_UPGRADEKEY
