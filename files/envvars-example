@@ -1,0 +1,5 @@
+# Environment variables for WikiApiary
+export WA_DBPASSWORD=xxx
+export WA_SECRETKEY=xxx
+export WA_UPGRADEKEY=xxx
+export WA_EXTDATADBPASSWORD=xxx

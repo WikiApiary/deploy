@@ -1,0 +1,35 @@
+PassEnv WA_DBPASSWORD
+PassEnv WA_SECRETKEY
+PassEnv WA_UPGRADEKEY
+PassEnv WA_EXTDATADBPASSWORD
+
+RewriteEngine On
+
+ErrorDocument 500 /index.php
+
+# do not allow bad bots
+RewriteCond %{HTTP_USER_AGENT} bot [NC]
+RewriteCond %{HTTP_USER_AGENT} !bingbot
+RewriteCond %{HTTP_USER_AGENT} !Googlebot
+RewriteCond %{HTTP_USER_AGENT} !DuckDuckBot
+RewriteCond %{REQUEST_URI} !^/robots\.txt$
+RewriteRule .* - [F,L]
+
+# Temporary redirect
+# RewriteCond %{REMOTE_ADDR} !^173.199.122.101
+# RewriteCond %{REMOTE_ADDR} !^185\.15\.56\.114$
+# RewriteCond %{REMOTE_ADDR} !^20\.85\.251\.165$
+# RewriteCond %{REMOTE_ADDR} !^72\.83\.226\.28$
+# RewriteCond %{REMOTE_ADDR} !^132\.147\.145\.62$
+# RewriteCond %{REMOTE_ADDR} !^102\.89\.\d+\.\d+$
+# RewriteCond %{REMOTE_ADDR} !^209\.253\.11\.93$
+# RewriteCond %{REMOTE_ADDR} !^69\.172\.184\.51$
+# RewriteCond %{REQUEST_URI} !^/bee.jpg$
+# RewriteCond %{REQUEST_URI} !^/index.php$
+# RewriteRule .* /index.php [L]
+
+# main rewrite rule
+RewriteRule ^/?wiki(/.*)?$ %{DOCUMENT_ROOT}/w/index.php [L]
+
+# Redirect / to Main Page
+RewriteRule ^/*$ %{DOCUMENT_ROOT}/w/index.php [L]
