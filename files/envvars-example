@@ -1,6 +1,12 @@
 A section like the following one needs to be added to /etc/apache2/envvars
 
-Since this contains secrets, it this is not stored in the git repository.
+~~~~~~~~~~ SNIP ~~~~~~~~~~
+. /etc/environment
+~~~~~~~~~~ SNIP ~~~~~~~~~~
+
+Then, add the following to the /etc/environment file so that this these settings are added to
+people's environents when they log in. Since this contains secrets, this is not stored in the
+(public) git repository.
 
 ~~~~~~~~~~ SNIP ~~~~~~~~~~
 # Environment variables for WikiApiary
@@ -9,3 +15,5 @@ export WA_SECRETKEY=xxx
 export WA_UPGRADEKEY=xxx
 export WA_EXTDATADBPASSWORD=xxx
 ~~~~~~~~~~ SNIP ~~~~~~~~~~
+
+Note that /etc/environment is loaded by pam_env.so which needs to be installed.
