@@ -1,0 +1,20 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - include_tasks:
+        file: ensure_python.yaml
+
+- hosts: web
+  tasks:
+    - name: Copy files into place
+      become: yes
+      ansible.builtin.copy:
+        src: files
+        dest: /var/www/wikiapiary/deploy
+        owner: mah
+        group: adm
+        mode: u+rw,g+rw,o+r,a-xt
+
+
+
