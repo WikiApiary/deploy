@@ -6,7 +6,7 @@
         file: ensure_python.yaml
 
 - hosts: web
-  vars_files: var/environment.yaml
+  vars_files: ../var/environment.yaml
   tasks:
     - name: Set up environment variables
       become: yes
@@ -20,7 +20,7 @@
       loop: "{{ env_var }}"
 
 - hosts: web
-  vars_files: var/sw-setup.yaml
+  vars_files: ../var/sw-setup.yaml
   tasks:
     - name: Set up apache+php
       become: yes
@@ -39,7 +39,7 @@
     - name: Install base packages for website
       become: yes
       ansible.builtin.copy:
-        src: files/
+        src: ../files/
         dest: /var/www/wikiapiary/deploy
         owner: mah
         group: adm
