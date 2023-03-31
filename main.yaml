@@ -1,0 +1,49 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - include_tasks:
+        file: ensure_python.yaml
+
+- hosts: web
+  vars_files: var/environment.yaml
+  tasks:
+    - name: Set up environment variables
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        regexp: '^export {{ item }}='
+        owner: root
+        group: root
+        mode: '0644'
+        line: export {{ item }}={{ lookup('ansible.builtin.env', item) }}
+      loop: "{{ env_var }}"
+
+- hosts: web
+  vars_files: var/sw-setup.yaml
+  tasks:
+    - name: Set up apache+php
+      become: yes
+      ansible.builtin.apt:
+        pkg: "{{ debian_wiki_packages }}"
+
+    - name: Source /etc/environment for apache
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/envvars
+        regexp: '^\. /etc/environment'
+        line: . /etc/environment
+
+- hosts: web
+  tasks:
+    - name: Install base packages for website
+      become: yes
+      ansible.builtin.copy:
+        src: files/
+        dest: /var/www/wikiapiary/deploy
+        owner: mah
+        group: adm
+        mode: u+rw,g+rw,o+r,a-xt
+
+
+

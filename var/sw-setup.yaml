@@ -1,0 +1,10 @@
+---
+debian_wiki_packages:
+  - libapache2-mod-php7.4
+  - php-curl
+  - php-intl
+  - php-mbstring
+  - php-mysql
+  - php-xml
+  - php-zip
+  - php-fpm

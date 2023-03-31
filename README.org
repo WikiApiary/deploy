@@ -1,0 +1,29 @@
+#+TITLE: Setting up WikiApiary
+
+This directory contains an ansible set up for the wikiapiary.com wiki.
+
+* Set up
+
+We use ansible to deploy the system. These secrets that need to be deployed on the server are expected to be set in environment variables on the control node.  See the file [[file:var/environment.yaml][environment.yaml]] for a list of the variables that need to be set and an explanation of them.
+
+You will need the following software installed:
+- [[Ansible][Ansible]]
+- [[https://www.gnu.org/software/make/][GNU make]]
+- [[https://mikefarah.gitbook.io/yq/][yq]]
+
+* Testing and development
+
+Update [[file:dev-hosts.yaml][dev-hosts.yaml]] to point to the hosts you want to use during testing.
+
+All you should need to do is run =make=. Your environment will be checked and the the ansible playbook in [[file:main.yaml][main.yaml]] will be run against the inventory in =dev-hosts.yaml=.
+
+* Production
+
+Once you have confirmed the playbook is working against your testing environment, you can reinvoke make with the production inventory file like this:
+#+begin_src shell
+make INVENTORY=hosts.yaml
+#+end_src
+
+* Reporting problems
+
+Bugs should be filed as issues on the [[https://github.com/WikiApiary/deploy/issues][WikiApiary/deploy github project]].

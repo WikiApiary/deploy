@@ -1,0 +1,11 @@
+---
+# These environment variables need to be set.
+env_var:
+  # $wgDBpassword for WikiApiary
+  - WA_DBPASSWORD
+  # $wgSecretKey for WikiApiary
+  - WA_SECRETKEY
+  # $wgUpgradeKey for WikiApiary
+  - WA_UPGRADEKEY
+  # password for database in external data for WikiApiary
+  - WA_EXTDATADBPASSWORD

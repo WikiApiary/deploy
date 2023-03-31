@@ -5,5 +5,6 @@
 ;; https://www.ansible.com/blog/deep-dive-on-ansible-vscode-extension
 ((yaml-mode . ((eval . (progn
                          (ansible)
-                         (lsp))
+                         (lsp)
+                         (company-mode))
                      ))))
