@@ -27,6 +27,15 @@
       ansible.builtin.apt:
         pkg: "{{ debian_wiki_packages }}"
 
+    - name: Make sure environment is copied in for php scripts
+      become: yes
+      ansible.builtin.copy:
+        src: ../files/envvars.ini
+        dest: "{{ item }}"
+      loop:
+          - /etc/php/7.4/cli/conf.d/99-envvars.ini
+          - /etc/php/7.4/apache2/conf.d/99-envvars.ini
+
     - name: Source /etc/environment for apache
       become: yes
       ansible.builtin.lineinfile:
@@ -34,16 +43,12 @@
         regexp: '^\. /etc/environment'
         line: . /etc/environment
 
-- hosts: web
-  tasks:
-    - name: Install base packages for website
-      become: yes
-      ansible.builtin.copy:
-        src: ../files/
-        dest: /var/www/wikiapiary/deploy
-        owner: mah
-        group: adm
-        mode: u+rw,g+rw,o+r,a-xt
-
-
+    - name: Check out mediawiki
+      ansible.builtin.git:
+        accept_newhostkey: y
+        dest: /var/www/wikiapiary/public_html/w
+        repo: https://gerrit.wikimedia.org/r/mediawiki/core.git
+        single_branch: y
+        version: REL1_39
+        depth: 1
 
