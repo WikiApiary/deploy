@@ -4,6 +4,61 @@
   ansible.builtin.apt:
     pkg: "{{ debian_wiki_packages }}"
 
+- name: make sure apache is listening on localhost port 81 so varnish can hand off
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/ports.conf
+    regexp: '^(\s*Listen\s*)80+\s*$'
+    replace: '\g<1>127.0.0.1:81'
+  notify: Reload Apache
+
+- name: Lower MaxKeepAliveRequests
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/apache2.conf
+    regexp: '^\s*MaxKeepAliveRequsts\s*\d+\s*$'
+    replace: 'MaxKeepAliveRequests 20'
+  notify: Reload Apache
+
+- name: Lower KeepAliveTimeout (h/t Brian)
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/apache2.conf
+    regexp: '^\s*KeepAliveTimeout\s+\d+\s*$'
+    replace: 'KeepAliveTimeout 3'
+  notify: Reload Apache
+
+- name: Set up pre-fork (default) StartServers
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/mods-available/mpm_prefork.conf
+    regexp: '^(\s*StartServers\s+)\d+\s*$'
+    replace: \g<1>4
+  notify: Reload Apache
+
+- name: Set up pre-fork (default) MaxSpareServers
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/mods-available/mpm_prefork.conf
+    regexp: '^(\s*MaxSpareServers\s+)\d+\s*$'
+    replace: \g<1>5
+  notify: Reload Apache
+
+- name: Set up pre-fork (default) MaxRequestWorkers
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/apache2/mods-available/mpm_prefork.conf
+    regexp: '^(\s*MaxRequestWorkers\s+)\d+\s*$'
+    replace: \g<1>5
+  notify: Reload Apache
+
+- name: Enable mod_rewrite
+  become: yes
+  ansible.builtin.shell:
+    creates: /etc/apache2/mods-enabled/rewrite.load
+    cmd: a2enmod rewrite
+  notify: Reload Apache
+
 - name: Make sure environment is copied in for php scripts
   become: yes
   ansible.builtin.copy:
@@ -12,13 +67,15 @@
   loop:
     - /etc/php/{{ php_ver }}/cli/conf.d/99-envvars.ini
     - /etc/php/{{ php_ver }}/apache2/conf.d/99-envvars.ini
+  notify: Reload Apache
 
 - name: Source /etc/environment for apache
   become: yes
   ansible.builtin.lineinfile:
     path: /etc/apache2/envvars
-    regexp: '^\. /etc/environment'
+    regexp: '^\. /etc/environment$'
     line: . /etc/environment
+  notify: Reload Apache
 
 - name: Copy {{ domain }}.conf into place for sites
   become: yes
@@ -29,5 +86,6 @@
 - name: Enable {{ domain }}
   become: yes
   ansible.builtin.shell:
+    creates: /etc/apache2/sites-enabled/{{ domain }}.conf
     cmd: a2ensite {{ domain }}
   notify: Reload Apache

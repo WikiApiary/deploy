@@ -4,6 +4,11 @@
     src: ../files/htaccess
     dest: "{{ public_html }}/.htaccess"
 
+- name: Find out if mediawiki is already checked out
+  stat:
+    path: "{{ public_html }}/w/.git"
+  register: mw_checked_out
+
 - name: Check out mediawiki
   ansible.builtin.git:
     accept_newhostkey: y
@@ -12,6 +17,7 @@
     single_branch: y
     version: "{{ mw_branch }}"
     depth: 1
+  when: not mw_checked_out.stat.exists
 
 - name: Copy LocalSettings.php into place
   ansible.builtin.copy:
@@ -23,17 +29,20 @@
     chdir: "{{ public_html }}/w"
     creates: composer.local.json
     cmd: echo {} > composer.local.json
+  register: comp_changed
 
 - name: Allow specific composer plugins
   ansible.builtin.shell:
     chdir: "{{ public_html }}/w"
     cmd: COMPOSER=composer.local.json composer config --no-plugins allow-plugins.wikimedia/composer-merge-plugin true
+  when: comp_changed.changed
 
 - name: Configure composer.local.json
   ansible.builtin.shell:
     chdir: "{{ public_html }}/w"
     cmd: COMPOSER=composer.local.json composer require --no-update "{{ item.key  }}:{{ item.value }}"
   loop: "{{ composer_extension | dict2items }}"
+  when: comp_changed.changed
 
 - name: Composer update
   ansible.builtin.shell:
