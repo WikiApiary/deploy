@@ -34,3 +34,9 @@
     chdir: "{{ public_html }}/w"
     cmd: COMPOSER=composer.local.json composer require --no-update "{{ item.key  }}:{{ item.value }}"
   loop: "{{ composer_extension | dict2items }}"
+
+- name: Composer update
+  ansible.builtin.shell:
+    chdir: "{{ public_html }}/w"
+    creates: "{{ public_html }}/w/composer.lock"
+    cmd: composer install --no-dev

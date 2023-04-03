@@ -32,11 +32,6 @@
 
 - hosts: web
   vars_files: ../var/setup.yaml
-  tasks:
-    - ansible.builtin.include_tasks: setup_composer.yaml
-
-- hosts: web
-  vars_files: ../var/setup.yaml
   roles:
     - role: geerlingguy.composer
       become: yes
