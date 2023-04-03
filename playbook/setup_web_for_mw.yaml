@@ -1,0 +1,33 @@
+---
+- name: Set up apache+php
+  become: yes
+  ansible.builtin.apt:
+    pkg: "{{ debian_wiki_packages }}"
+
+- name: Make sure environment is copied in for php scripts
+  become: yes
+  ansible.builtin.copy:
+    src: ../files/envvars.ini
+    dest: "{{ item }}"
+  loop:
+    - /etc/php/{{ php_ver }}/cli/conf.d/99-envvars.ini
+    - /etc/php/{{ php_ver }}/apache2/conf.d/99-envvars.ini
+
+- name: Source /etc/environment for apache
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/apache2/envvars
+    regexp: '^\. /etc/environment'
+    line: . /etc/environment
+
+- name: Copy {{ domain }}.conf into place for sites
+  become: yes
+  ansible.builtin.copy:
+    src: ../files/{{ domain }}.conf
+    dest: /etc/apache2/sites-available/{{ domain }}.conf
+
+- name: Enable {{ domain }}
+  become: yes
+  ansible.builtin.shell:
+    cmd: a2ensite {{ domain }}
+  notify: Reload Apache

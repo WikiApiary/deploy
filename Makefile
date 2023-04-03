@@ -15,3 +15,4 @@ checkEnv:
 		exit 1																			\
 	)
 
+# need to install https://galaxy.ansible.com/geerlingguy/composer

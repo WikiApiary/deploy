@@ -20,35 +20,25 @@
       loop: "{{ env_var }}"
 
 - hosts: web
-  vars_files: ../var/sw-setup.yaml
+  vars_files: ../var/setup.yaml
   tasks:
-    - name: Set up apache+php
+    - ansible.builtin.include_tasks: setup_web_for_mw.yaml
+  handlers:
+    - name: Reload Apache
       become: yes
-      ansible.builtin.apt:
-        pkg: "{{ debian_wiki_packages }}"
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded
 
-    - name: Make sure environment is copied in for php scripts
+- hosts: web
+  vars_files: ../var/setup.yaml
+  tasks:
+    - ansible.builtin.include_tasks: setup_composer.yaml
+
+- hosts: web
+  vars_files: ../var/setup.yaml
+  roles:
+    - role: geerlingguy.composer
       become: yes
-      ansible.builtin.copy:
-        src: ../files/envvars.ini
-        dest: "{{ item }}"
-      loop:
-          - /etc/php/7.4/cli/conf.d/99-envvars.ini
-          - /etc/php/7.4/apache2/conf.d/99-envvars.ini
-
-    - name: Source /etc/environment for apache
-      become: yes
-      ansible.builtin.lineinfile:
-        path: /etc/apache2/envvars
-        regexp: '^\. /etc/environment'
-        line: . /etc/environment
-
-    - name: Check out mediawiki
-      ansible.builtin.git:
-        accept_newhostkey: y
-        dest: /var/www/wikiapiary/public_html/w
-        repo: https://gerrit.wikimedia.org/r/mediawiki/core.git
-        single_branch: y
-        version: REL1_39
-        depth: 1
-
+  tasks:
+    - ansible.builtin.include_tasks: setup_mw.yaml

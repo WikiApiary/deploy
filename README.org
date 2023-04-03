@@ -11,11 +11,13 @@ You will need the following software installed:
 - [[https://www.gnu.org/software/make/][GNU make]]
 - [[https://mikefarah.gitbook.io/yq/][yq]]
 
+While not required, you may find that [[https://direnv.net/docs/installation.html][installing]] [[https://direnv.net/][direnv]] and [[https://direnv.net/docs/hook.html][configuring the hook for it]] so that the .envrc file in a directory is read is helpful. If you do that, you can store your secrets in your [[file:.gitignore][.gitignore]]'d .env file and the included [[file:.envrc][.envrc]] file will use your use it to populate your environment with the secrets that that are expected here.
+
 * Testing and development
 
-Update [[file:dev-hosts.yaml][dev-hosts.yaml]] to point to the hosts you want to use during testing.
+Update [[file:dev-hosts.yaml][dev-hosts.yaml]] to point to the hosts you want to use during testing.  Alternatively, you can create your own inventory file in the [[file:inventory/][inventory]] subdirectory and point to it with the =INVENTORY= environment variable.  For example, if you create an inventory file in the inventory subdirectory named =sam-test-file.yaml=, then you would set your =INVENTORY= environment variable to =sam-test-file.yaml=.
 
-All you should need to do is run =make=. Your environment will be checked and the the ansible playbook in [[file:main.yaml][main.yaml]] will be run against the inventory in =dev-hosts.yaml=.
+All you should need to do is run =make=. Your environment will be checked and the the ansible playbook in [[file:main.yaml][main.yaml]] will be run against your dev environment.
 
 * Production
 

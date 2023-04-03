@@ -1,0 +1,36 @@
+---
+- name: Copy htaccess into place
+  ansible.builtin.copy:
+    src: ../files/htaccess
+    dest: "{{ public_html }}/.htaccess"
+
+- name: Check out mediawiki
+  ansible.builtin.git:
+    accept_newhostkey: y
+    dest: "{{ public_html }}/w"
+    repo: "{{ mw_core_git }}"
+    single_branch: y
+    version: "{{ mw_branch }}"
+    depth: 1
+
+- name: Copy LocalSettings.php into place
+  ansible.builtin.copy:
+    src: ../files/LocalSettings.php
+    dest: "{{ public_html }}/w/LocalSettings.php"
+
+- name: Create empty composer.local.json
+  ansible.builtin.shell:
+    chdir: "{{ public_html }}/w"
+    creates: composer.local.json
+    cmd: echo {} > composer.local.json
+
+- name: Allow specific composer plugins
+  ansible.builtin.shell:
+    chdir: "{{ public_html }}/w"
+    cmd: COMPOSER=composer.local.json composer config --no-plugins allow-plugins.wikimedia/composer-merge-plugin true
+
+- name: Configure composer.local.json
+  ansible.builtin.shell:
+    chdir: "{{ public_html }}/w"
+    cmd: COMPOSER=composer.local.json composer require --no-update "{{ item.key  }}:{{ item.value }}"
+  loop: "{{ composer_extension | dict2items }}"

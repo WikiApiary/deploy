@@ -2,3 +2,5 @@
 \#.*\#
 .\#*
 
+# Secrets can be stored here.
+.env
